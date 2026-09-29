@@ -1,0 +1,95 @@
+function Scr_mini_map(){
+// ミニマップの描画
+draw_set_color(c_silver);
+
+// ★ミニマップ用の1マスのサイズ（※global.tile_sizeのままだと画面をはみ出すので、例えば「8」や「12」などの小さいドット数にします）
+var unit = 12; 
+
+// ★【新設定】ミニマップの「表示枠」のマス数をここで固定します（例：15マス×15マスの四角い枠にする）
+var view_masu = 15; 
+
+// 2Dマップの格子サイズ（ルームのピクセル幅ではなく、マスの数。tilemapから自動取得します）
+var map_el_id = layer_tilemap_get_id("Tiles_tukou");
+var map_w_cells = tilemap_get_width(map_el_id);
+var map_h_cells = tilemap_get_height(map_el_id);
+
+// 描画範囲
+var left   = 1100; // 左マージン
+var top    = 32;  // 上マージン
+var right  = left + (view_masu * unit); // 右の限界線
+var bottom = top  + (view_masu * unit); // 下の限界線
+
+//プレイヤーの位置をゲット！
+var p_grid_x = Obj_player.x div global.tile_size;
+var p_grid_y = Obj_player.y div global.tile_size;
+
+// プレイヤーがこの「15マスの枠」のちょうど真ん中に来るように、読み込むマップの開始マスを逆算
+var start_x = p_grid_x - floor(view_masu / 2);
+var start_y = p_grid_y - floor(view_masu / 2);
+
+// ①区切り線（グリッド）の描画（ルームサイズに関係なく、15マス分の枠だけを綺麗に引く）
+for(var i = 0; i < view_masu + 1; i++) {
+  var x1 = left + (unit * i);
+  draw_line(x1, top, x1, bottom); // 縦線
+}
+for(var j = 0; j < view_masu + 1; j++) {
+  var y1 = top + (unit * j);
+  draw_line(left, y1, right, y1); // 横線
+}
+
+// ②チップの描画（15×15マスのループに絞る！）
+for(var j = 0; j < view_masu; j++) {
+  for(var i = 0; i < view_masu; i++) {
+    
+    // 現在の枠のコマ（i, j）に対応する、実際のマップのマス目座標（check_x, check_y）
+    var check_x = start_x + i;
+    var check_y = start_y + j;
+    
+    // マップの配列の範囲内（0以上）で、のときだけタイルをチェック
+    if (check_x >= 0 && check_y >= 0&&check_x < map_w_cells&&check_y < map_h_cells) {
+        if (tilemap_get(map_el_id, check_x, check_y) > 0) {
+            // 壁（タイルがある場所）はシルバーで塗りつぶす
+            draw_set_color(c_silver);
+            
+            var x1 = left + (unit * i);
+            var y1 = top  + (unit * j);
+            var x2 = x1 + unit;
+            var y2 = y1 + unit;
+            draw_rectangle(x1, y1, x2, y2, false);
+        }
+	}
+  }
+}
+// ③プレイヤーの現在地（固定枠のちょうど「真ん中のマス」に向き付きの矢印を描く！）
+var center_i = floor(view_masu / 2);
+var center_j = floor(view_masu / 2);
+
+// マスの中心座標をきっちり計算
+var px = left + (center_i * unit) + (unit / 2);
+var py = top  + (center_j * unit) + (unit / 2);
+
+// 矢印のサイズ（マスの大きさに合わせて調整、unitが12なら4〜5くらいがベスト）
+var arrow_size = 5; 
+
+draw_set_color(c_red); // プレイヤーは赤！
+
+// プレイヤーの向きに合わせて、三角形（▲）の3点の座標を力ずくで計算して描画！
+switch (Obj_player.dir) {
+    case 0: // 北（上向き ▲）
+        draw_triangle(px, py - arrow_size, px - arrow_size, py + arrow_size, px + arrow_size, py + arrow_size, false);
+        break;
+        
+    case 1: // 南（下向き ▼）
+        draw_triangle(px, py + arrow_size, px - arrow_size, py - arrow_size, px + arrow_size, py - arrow_size, false);
+        break;
+        
+    case 2: // 西（左向き ◀）
+        draw_triangle(px - arrow_size, py, px + arrow_size, py - arrow_size, px + arrow_size, py + arrow_size, false);
+        break;
+        
+    case 3: // 東（右向き ▶）
+        draw_triangle(px + arrow_size, py, px - arrow_size, py - arrow_size, px - arrow_size, py + arrow_size, false);
+        break;
+}
+
+}
