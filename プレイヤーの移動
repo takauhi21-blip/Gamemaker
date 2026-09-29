@@ -1,0 +1,95 @@
+// --- obj_player : ステップ(Step) --
+
+// ピクセル単位で進む方向を初期化！
+	    var _dx = 0;
+		var _dy = 0;
+var _cell_size = global.tile_size; //代入！
+var _is_wall=false;//壁かどうか
+// ★【ここを追加！】タイマーが動いている間は、キー入力を完全に無視してタイマーを減らす！
+if (move_timer > 0) {
+    move_timer -= 1;
+	global.idou = false;
+    io_clear(); // 入力をリセットして暴走を止める
+	exit;
+} else {
+    // 矢印キーで動かす(ウディタ式移動を超えた完全なるグリッド移動！)
+	 if (keyboard_check(vk_up)) {
+		_dy -=  _cell_size; // 上に進むならyをマイナス
+		dir=0;
+    }
+    if (keyboard_check(vk_down)) {
+		_dy +=  _cell_size;  // 下に進むならyをプラス
+		dir=1;
+    }
+    if (keyboard_check(vk_left)) {
+    　_dx -=  _cell_size; // 左に進むならxをマイナス
+      dir=2;
+    }
+    if (keyboard_check(vk_right)) {
+	　_dx +=  _cell_size;  // 右に進むならxをプラス
+	 　dir=3;
+    }
+
+if (_dx != 0 || _dy != 0) {
+	 // もし進もうとした先が、世界の左端(0未満)か右端(room_width以上)、
+	 // あるいは上端(0未満)か下端(room_height以上)に1ピクセルでもはみ出るなら...... 
+	 if (x+_dx >= room_width || y+_dy >= room_height) { 
+		 // 【世界の終わりバリア】:入力を完全にリセットして、このフレームの移動処理を強制終了させる!!
+		 _dx = 0; 
+		 _dy = 0; 
+		 io_clear(); 
+		 exit; // ここで即死終了させることで、プレイヤーは世界のフチから外に絶対に1歩も歩けなくなります! 
+		 }
+		 
+	// 1.まずルームに配置された「レイヤー（Layer Handle）」を名前で取得！
+    var _layer_id = layer_get_id("Tiles_tukou"); // ルームエディタのタイルレイヤー名に変えるんだぜ！
+	 
+		if (_layer_id != -1) {
+		//もしあるなら代入する！
+        var _tilemap_id = layer_tilemap_get_id(_layer_id);
+		
+		// 【Runtime 2024.14完全対応！】
+        // Createイベントで定義したメソッドを、毎フレームの負荷ゼロでスマートに呼び出す！！！
+        if (global.check_solid(x + _dx, y + _dy)) {
+            _is_wall = true;
+        }
+			
+        if (_tilemap_id != -1) {	
+		 
+            // 進もうとしている「1マス先のドット座標」を、セルのインデックス座標（0,1,2...）に変換！
+            var _target_cell_x = (x + _dx) / (_cell_size);
+            var _target_cell_y = (y + _dy) / (_cell_size);
+            
+            // 2024.14最新の型安全関数：1マス先のタイルデータを直接ぶち抜く！！！
+            var _tile_data = tilemap_get(_tilemap_id, _target_cell_x, _target_cell_y);
+            var _tile_index = tile_get_index(_tile_data);
+			
+			// もし1マス先が壁タイル（ID:9）なら、壁フラグを立てる！！！
+            if ((_tile_index == 9)) {
+			_is_wall = true;
+			}
+	}
+	
+//移動させる！
+     if (_is_wall == false) {
+      if (_dy < 0) global.player_y -= 1;
+	  if (_dy > 0) global.player_y += 1;
+	  if (_dx < 0) global.player_x -= 1;
+      if (_dx > 0) global.player_x += 1;
+	 }
+	 
+    x = global.player_x * _cell_size;
+    y = global.player_y * _cell_size;
+   
+	// ★【ここを追加！】1マス動いたら、タイマーを「8フレーム」に設定してウェイトをかける！
+        // （※この「8」の数字を小さくすると高速移動、大きくするとおっさん歩きになります）
+        move_timer =5; 	
+	   
+    }else{
+		//移動をやめて待機
+		_dx = 0 ;
+		_dy = 0;
+		io_clear();
+	    }
+	　}
+}
