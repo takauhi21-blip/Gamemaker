@@ -1,4 +1,4 @@
-// --- obj_player : ステップ(Step) --
+//作成イベントでこれを初期化しておいてくれ！
 // ファイルを増やさず、起動時に1回だけ生成して使い回す型安全オブジェクト判定メソッドだ！
 global.check_solid = function(_target_x, _target_y) {
     var _size = global.tile_size;
@@ -19,6 +19,8 @@ global.check_solid = function(_target_x, _target_y) {
     }
     return false; // 何もいないので安全！
 };
+
+// --- obj_player : ステップ(Step) --
 
 // ピクセル単位で進む方向を初期化！
 	    var _dx = 0;
