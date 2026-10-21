@@ -53,7 +53,7 @@ if (move_timer > 0) {
 if (_dx != 0 || _dy != 0) {
 	 // もし進もうとした先が、世界の左端(0未満)か右端(room_width以上)、
 	 // あるいは上端(0未満)か下端(room_height以上)に1ピクセルでもはみ出るなら...... 
-	 if (x+_dx >= room_width || y+_dy >= room_height) { 
+	 if (x+_dx < 0 || y+_dy < 0||x+_dx >= room_width || y+_dy >= room_height) { 
 		 // 【世界の終わりバリア】:入力を完全にリセットして、このフレームの移動処理を強制終了させる!!
 		 _dx = 0; 
 		 _dy = 0; 
