@@ -141,7 +141,7 @@ draw_set_color(c_silver);
 var unit = 12; 
 
 // ★【新設定】ミニマップの「表示枠」のマス数をここで固定します（例：15マス×15マスの四角い枠にする）
-var view_masu = 15; 
+var view_masu = 20; 
 
 // 2Dマップの格子サイズ（ルームのピクセル幅ではなく、マスの数。tilemapから自動取得します）
 var map_el_id = layer_tilemap_get_id("Tiles_tukou");
