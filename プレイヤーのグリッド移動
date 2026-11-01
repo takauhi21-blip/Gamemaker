@@ -36,21 +36,19 @@ if (move_timer > 0) {
     io_clear(); // 入力をリセットして暴走を止める
 	exit;
 } else {
-    // 矢印キーで動かす(ウディタ式移動を超えた完全なるグリッド移動！)
+
+// 矢印キーで動かす(ウディタ式移動を超えた完全なるグリッド移動！)
 	 if (keyboard_check(vk_up)) {
-		_dy -=  _cell_size; // 上に進むならyをマイナス
+		_dy -= _cell_size; // 上に進むならyをマイナス
 		dir=0;
-    }
-    if (keyboard_check(vk_down)) {
-		_dy +=  _cell_size;  // 下に進むならyをプラス
+    }else if (keyboard_check(vk_down)) {
+		_dy += _cell_size;  // 下に進むならyをプラス
 		dir=1;
-    }
-    if (keyboard_check(vk_left)) {
-    　_dx -=  _cell_size; // 左に進むならxをマイナス
+    }else if (keyboard_check(vk_left)) {
+    　_dx -= _cell_size; // 左に進むならxをマイナス
       dir=2;
-    }
-    if (keyboard_check(vk_right)) {
-	　_dx +=  _cell_size;  // 右に進むならxをプラス
+    }else if (keyboard_check(vk_right)) {
+	　_dx += _cell_size;  // 右に進むならxをプラス
 	 　dir=3;
     }
 
