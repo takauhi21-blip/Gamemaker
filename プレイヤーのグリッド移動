@@ -1,16 +1,18 @@
 //作成イベントでこれを初期化しておいてくれ！
 // ファイルを増やさず、起動時に1回だけ生成して使い回す型安全オブジェクト判定メソッドだ！
-global.check_solid = function(_target_x, _target_y) {
+global.check_solid = function(_target_x, _target_y,_my_id) {
     var _size = global.tile_size;
     var _x1 = _target_x;
     var _y1 = _target_y;
     var _x2 = _x1 + _size - 1;
     var _y2 = _y1 + _size - 1;
-    
+   
     // 自分以外のオブジェクト（岩やNPC）の衝突マスクを面でスキャン！
     var _inst = collision_rectangle(_x1, _y1, _x2, _y2, all, false, true);
-    
-    if (_inst != noone &&_inst != id) {
+	
+	// ★【ここを修正】_inst が「自分自身の本当のID（_my_id）」だったら、それは壁じゃないのでスルー！
+    if (_inst != noone &&_inst != _my_id) {
+		
         // もし対象オブジェクトに「is_solid」変数が設定されていて、それがfalseなら通してヨシ！
         if (variable_instance_exists(_inst, "is_solid") && _inst.is_solid == false) {
             return false;
